@@ -19,6 +19,7 @@ This project is a bot that generates and posts images to Instagram based on comm
     - INSTAGRAM_USERNAME
     - INSTAGRAM_PASSWORD
     - DALLE_API_KEY
+    - LAST_N_COMMENTS Process this amount of comments and upload an image for every one.
 
 ## Usage
 

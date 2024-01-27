@@ -20,16 +20,10 @@ class ArtistBot {
     await this.instagram.init();
   }
 
-  async getLastCommentsWithMostLikes(): Promise<Comment[]> {
-    return this.instagram.getMostLikedCommentsFromLastImage();
-  }
-
-  generateDescription(
-    comment: string,
-    likes: number,
-    username: string
-  ): string {
-    return `\n\nInput: '${comment}'. \n\nCrafted with the help of @${username}'s comment, which gathered ${likes} likes.\n\nThis image was generated with a reduced version of OpenAI´s DALL·E.\nDALL·E creates images from text captions for a wide range of concepts expressible in natural language.\nCheck https://openai.com/blog/dall-e/ to know more! \n\nSpecial thanks to:\ngithub.com/borisdayma\ngithub.com/saharmor\n\nDevs:\nhttps://github.com/paluchi/ai_artist\n#dalle #openai #dalle2 #art`;
+  async getLastCommentsWithMostLikes(
+    lastNcomments?: number
+  ): Promise<Comment[]> {
+    return this.instagram.getMostLikedCommentsFromLastImage(lastNcomments);
   }
 
   async generateImages(prompts: string[]): Promise<Buffer[]> {
@@ -47,30 +41,12 @@ class ArtistBot {
     await this.instagram.uploadImagePost(images, caption);
   }
 
-  async run(): Promise<void> {
-    let comments = await this.getLastCommentsWithMostLikes();
-    if (comments.length === 0) {
-      comments = [
-        {
-          text: this.generateRandomImageDescription(),
-          like_count: 0,
-          username: env.INSTAGRAM_USERNAME,
-        },
-      ];
-    }
-    const descriptions = comments.map((comment) =>
-      this.generateDescription(
-        comment.text,
-        comment.like_count,
-        comment.username
-      )
-    );
-
-    for (let i = 0; i < comments.length; i++) {
-      const images = await this.generateImages([comments[i].text]);
-      const description = descriptions[i];
-      await this.instagram.uploadImagePost(images, description);
-    }
+  generatePostDescription(
+    comment: string,
+    likes: number,
+    username: string
+  ): string {
+    return `\n\nInput: '${comment}'. \n\nCrafted with the help of @${username}'s comment, which gathered ${likes} likes.`;
   }
 
   generateRandomImageDescription() {
@@ -85,6 +61,87 @@ class ArtistBot {
     const moodNoun = faker.music.genre();
 
     return `${subject} ${action} ${context}, evoking a ${moodAdjective} and ${moodNoun} mood.`;
+  }
+
+  generateBotComment(): Comment {
+    return {
+      text: this.generateRandomImageDescription(),
+      like_count: 0,
+      username: env.INSTAGRAM_USERNAME,
+    };
+  }
+
+  async generateCommentPostContent(
+    comment: Comment,
+    retryCount = 0
+  ): Promise<{
+    image: Buffer;
+    description: string;
+  }> {
+    try {
+      const description = this.generatePostDescription(
+        comment.text,
+        comment.like_count,
+        comment.username
+      );
+
+      const images = await this.generateImages([comment.text]);
+
+      return {
+        image: images[0],
+        description,
+      };
+    } catch (error) {
+      if (retryCount >= 5) {
+        console.log(error);
+        throw new Error("Too many errors while generating post content");
+      } else if (retryCount >= 2) {
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        return this.generateCommentPostContent(
+          this.generateBotComment(),
+          retryCount + 1
+        );
+      } else {
+        return this.generateCommentPostContent(comment, retryCount + 1);
+      }
+    }
+  }
+
+  async run(lastNcomments?: number): Promise<void> {
+    // Attempt to get the comments with the most likes
+    let comments = await this.getLastCommentsWithMostLikes(lastNcomments);
+
+    // If no comments, use a bot-generated comment
+    if (comments.length === 0) {
+      comments = [this.generateBotComment()];
+    }
+
+    const images: Buffer[] = [];
+    const descriptions: string[] = [];
+
+    // Process each comment
+    try {
+      for (const comment of comments) {
+        // Generate post content for each comment
+        const content = await this.generateCommentPostContent(comment);
+        images.push(content.image);
+        descriptions.push(content.description);
+      }
+
+      // Join all descriptions with two newlines
+      let fullDescription = descriptions.join("\n\n");
+      // Append the common text at the end of the descriptions
+      fullDescription +=
+        "\n\nThis image was generated with AI that creates images from text captions for a wide range of concepts expressible in natural language.\n\nRepo:\nhttps://github.com/paluchi/ai_artist\n\n#ai #art #dalle #openai #creative #technology #innovation #future #design #digitalart #artificialintelligence";
+
+      // Upload all images as a single post if there are any images
+      if (images.length > 0) {
+        await this.instagram.uploadImagePost(images, fullDescription);
+      }
+    } catch (error) {
+      console.error("Error processing comments:", error);
+      // Handle any additional error logging or recovery as needed
+    }
   }
 }
 

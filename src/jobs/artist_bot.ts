@@ -11,7 +11,7 @@ artistBot.init();
 
 const runArtistBot = async () => {
   try {
-    await artistBot.run();
+    await artistBot.run(env.LAST_N_COMMENTS);
     console.log("ArtistBot ran successfully");
   } catch (error) {
     console.error("Error running ArtistBot:", error);
