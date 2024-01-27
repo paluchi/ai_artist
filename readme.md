@@ -1,4 +1,4 @@
-![Banner Image](./banner.jpg)
+![Banner Image](./static/banner.jpg)
 
 # Artist Bot
 
