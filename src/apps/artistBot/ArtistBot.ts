@@ -5,6 +5,7 @@ import OpenAIDalleClient from "../services/OpenAIDalleClient";
 import subjects from "./utils/subjects";
 import actions from "./utils/actions";
 import contexts from "./utils/contexts";
+import env from "../../utils/env";
 
 class ArtistBot {
   private instagram: InstagramClient;
@@ -28,7 +29,7 @@ class ArtistBot {
     likes: number,
     username: string
   ): string {
-    return `Input: '${comment}'. Crafted with help from @${username} who gathered ${likes} likes.`;
+    return `\n\nInput: '${comment}'. \n\nCrafted with the help of @${username}'s comment, which gathered ${likes} likes.\n\nThis image was generated with a reduced version of OpenAI´s DALL·E.\nDALL·E creates images from text captions for a wide range of concepts expressible in natural language.\nCheck https://openai.com/blog/dall-e/ to know more! \n\nSpecial thanks to:\ngithub.com/borisdayma\ngithub.com/saharmor\n\nDevs:\nhttps://github.com/paluchi/ai_artist\n#dalle #openai #dalle2 #art`;
   }
 
   async generateImages(prompts: string[]): Promise<Buffer[]> {
@@ -53,7 +54,7 @@ class ArtistBot {
         {
           text: this.generateRandomImageDescription(),
           like_count: 0,
-          username: "The Artist Bot",
+          username: env.INSTAGRAM_USERNAME,
         },
       ];
     }

@@ -1,3 +1,5 @@
+![Banner Image](./banner.jpg)
+
 # Artist Bot
 
 This project is a bot that generates and posts images to Instagram based on comments from users. It uses the OpenAI DALL-E API to generate images and the Instagram API to post images.
@@ -33,5 +35,5 @@ Tests are located in the `tests` directory. You can run them with `npm run test`
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-
+git init
 MIT
