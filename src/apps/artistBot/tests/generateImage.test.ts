@@ -16,9 +16,9 @@ describe("ArtistBot", () => {
     await artistBot.init();
   });
 
-  it("generateImages should return an image buffer", async () => {
-    const prompts = ["robot dancing"];
-    const images = await artistBot.generateImages(prompts);
+  it("generateImage should return an image buffer", async () => {
+    const prompt = "Fox running";
+    const images = await artistBot.generateImage(prompt);
 
     // Perform assertions
     expect(images).toBeInstanceOf(Array);

@@ -6,4 +6,8 @@ const main = async () => {
   scheduleArtistBotJob();
 };
 
+// setTimeout(async () => {
+//   await runArtistBot();
+// }, 5000);
+
 main();

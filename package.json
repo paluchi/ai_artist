@@ -11,9 +11,13 @@
   "author": "Gonzalo Alessandrelli",
   "license": "ISC",
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
+    "@types/fluent-ffmpeg": "^2.1.24",
     "axios": "^1.6.7",
     "dotenv": "^16.4.1",
     "faker": "^6.6.6",
+    "fluent-ffmpeg": "^2.1.2",
     "instagram-private-api": "^1.45.3",
     "node-cron": "^3.0.3",
     "openai": "^4.26.0",
@@ -22,7 +26,9 @@
   "devDependencies": {
     "@faker-js/faker": "^8.4.0",
     "@types/faker": "^6.6.9",
+    "@types/file-type": "^10.9.1",
     "@types/jest": "^29.5.11",
+    "@types/mmmagic": "^0.4.33",
     "@types/node": "^20.11.6",
     "@types/node-cron": "^3.0.11",
     "nodemon": "^3.0.3",

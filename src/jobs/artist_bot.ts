@@ -5,7 +5,9 @@ import ArtistBot from "../apps/artistBot/ArtistBot";
 const artistBot = new ArtistBot(
   env.INSTAGRAM_USERNAME,
   env.INSTAGRAM_PASSWORD,
-  env.DALLE_API_KEY
+  env.DALLE_API_KEY,
+  env.MONOLOGUE_CONTEXT,
+  env.MONOLOGUE_LENGTH
 );
 artistBot.init();
 

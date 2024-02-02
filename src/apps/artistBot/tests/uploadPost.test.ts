@@ -1,11 +1,10 @@
 const fs = require("fs");
-const path = require("path");
 require("dotenv").config();
 
 import ArtistBot from "../ArtistBot";
 
 describe("ArtistBot", () => {
-  let artistBot: any;
+  let artistBot: ArtistBot;
 
   beforeAll(async () => {
     artistBot = new ArtistBot(
@@ -16,9 +15,9 @@ describe("ArtistBot", () => {
     await artistBot.init();
   });
 
-  it("uploadImagePost should upload an image", async () => {
-    const imagePath = "test.png";
-    const imageBuffer = fs.readFileSync(imagePath);
+  it("uploadPost should upload media", async () => {
+    const mediaPath = "video.mp4";
+    const mediaBuffer = fs.readFileSync(mediaPath);
 
     const mockComments = [
       {
@@ -29,15 +28,15 @@ describe("ArtistBot", () => {
     ];
 
     // Using the first mock comment to generate a description
-    const description = artistBot.generateDescription(
+    const description = artistBot.generatePostDescription(
       mockComments[0].text,
       mockComments[0].like_count,
       mockComments[0].username
     );
 
-    await artistBot.uploadImagePost([imageBuffer], description);
+    await artistBot.uploadPost([mediaBuffer], description);
 
     // Perform any necessary assertions or checks here
     // Note: Verifying actual upload on Instagram might require additional steps
-  });
+  }, 75000);
 });
